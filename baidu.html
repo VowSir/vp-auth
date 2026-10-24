@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- OAuth redirect relay for 百度网盘 (VOWS-36), hosted at
+     https://vowsir.github.io/vp-auth/baidu.html (the 授权回调地址 registered on
+     pan.baidu.com/union/console). It only hands code + state (or Baidu's error
+     fields) to videoplayer://oauth/baidu so ASWebAuthenticationSession can
+     finish. No keys live here; nothing is stored, logged or sent anywhere: no
+     external resources, no referrer, and the query is wiped from the address bar. -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex">
+<title>正在返回 App…</title>
+<style>body{font:17px -apple-system,system-ui,sans-serif;margin:3em 1.5em;text-align:center;color:#333}</style>
+</head>
+<body>
+<p id="m">正在返回 App…</p>
+<script>
+(function () {
+  // Only the fields the app reads (CloudOAuth.code(fromCallback:)); anything else is dropped.
+  var allowed = ["code", "state", "error", "error_description", "errno", "errmsg"];
+  var input = new URLSearchParams(location.search);
+  var output = new URLSearchParams();
+  allowed.forEach(function (name) {
+    var value = input.get(name);
+    if (value !== null && value.length <= 2048) output.set(name, value);
+  });
+  // Don't leave the code in the address bar / history of this page.
+  history.replaceState(null, "", location.pathname);
+
+  var message = document.getElementById("m");
+  // A code needs its state (the app rejects it otherwise); errors go back even without one.
+  var ok = (output.has("code") && output.has("state")) || output.has("error") || output.has("errno");
+  if (!ok) {
+    message.textContent = "授权参数不完整，请回到 App 重新登录百度网盘。";
+    return;
+  }
+  var target = "videoplayer://oauth/baidu?" + output.toString();
+  location.replace(target);
+  setTimeout(function () {
+    message.textContent = "没有自动返回？";
+    var link = document.createElement("a");
+    link.href = target;
+    link.textContent = "点这里回到 App";
+    message.appendChild(link);
+  }, 1500);
+})();
+</script>
+</body>
+</html>
