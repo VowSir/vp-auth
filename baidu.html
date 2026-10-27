@@ -2,7 +2,7 @@
 <!-- OAuth redirect relay for 百度网盘 (VOWS-36), hosted at
      https://vowsir.github.io/vp-auth/baidu.html (the 授权回调地址 registered on
      pan.baidu.com/union/console). It only hands code + state (or Baidu's error
-     fields) to videoplayer://oauth/baidu so ASWebAuthenticationSession can
+     fields) to floraplay://oauth/baidu so ASWebAuthenticationSession can
      finish. No keys live here; nothing is stored, logged or sent anywhere: no
      external resources, no referrer, and the query is wiped from the address bar. -->
 <html lang="zh-CN">
@@ -37,7 +37,7 @@
     message.textContent = "授权参数不完整，请回到 App 重新登录百度网盘。";
     return;
   }
-  var target = "videoplayer://oauth/baidu?" + output.toString();
+  var target = "floraplay://oauth/baidu?" + output.toString();
   location.replace(target);
   setTimeout(function () {
     message.textContent = "没有自动返回？";
