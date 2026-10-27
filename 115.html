@@ -1,0 +1,16 @@
+<!doctype html>
+<!-- OAuth redirect relay for 115 (VOWS-16). Host it at the redirect_uri registered
+     on open.115.com. It forwards ?code=&state= to the app's custom scheme so
+     ASWebAuthenticationSession can finish; nothing is stored or sent anywhere. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>正在返回 App…</title>
+<p id="m">正在返回 App…</p>
+<script>
+  var q = location.search || "";
+  var target = "floraplay://oauth/115" + q;
+  location.replace(target);
+  setTimeout(function () {
+    document.getElementById("m").innerHTML = '没有自动返回？<a href="' + target.replace(/"/g, "&quot;") + '">点这里回到 App</a>';
+  }, 1500);
+</script>
